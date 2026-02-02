@@ -1,0 +1,191 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RegistrationStatus {
+  PENDING 
+  APPROVED
+  REJECTED
+}
+
+enum GameFormat {
+  SOLO
+  DUO
+  SQUAD
+}
+
+model User {
+  id              String         @id @default(uuid())
+  name            String
+  email           String         @unique
+  password        String
+  phone           String?
+  role            Role           @default(USER)
+
+  emailVerified   Boolean        @default(false)
+  emailVerifiedAt DateTime?
+
+  registrations   Registration[]
+  payments        Payment[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+
+model Tournament {
+  id             String         @id @default(uuid())
+  title          String
+  game           String
+  format         GameFormat
+  entryFee       Int
+  prizePool      String
+
+  maxSlots       Int
+  startDateTime  DateTime
+
+  rules          String?
+  upiId          String
+
+  registrations  Registration[]
+  results        Result?
+  roomDetails    RoomDetails?
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Registration {
+  id             String             @id @default(uuid())
+
+  userId         String
+  tournamentId   String
+
+  teamName       String
+  status         RegistrationStatus @default(PENDING)
+
+  reservedUntil  DateTime?
+  spotNumber     Int?
+
+  user           User       @relation(fields: [userId], references: [id])
+  tournament     Tournament @relation(fields: [tournamentId], references: [id])
+  teamMembers    TeamMember[]
+  payment        Payment?
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([userId, tournamentId])
+}
+
+model TeamMember {
+  id              String   @id @default(uuid())
+
+  registrationId  String
+  name            String
+  email           String
+  phone           String
+  inGameName      String
+
+  registration    Registration @relation(fields: [registrationId], references: [id])
+
+  createdAt       DateTime @default(now())
+}
+
+model Payment {
+  id               String   @id @default(uuid())
+
+  userId           String
+  registrationId   String   @unique
+
+  amount           Int
+  paymentMethod    String   @default("UPI")
+  status           PaymentStatus @default(PENDING)
+
+  user             User           @relation(fields: [userId], references: [id])
+  registration     Registration   @relation(fields: [registrationId], references: [id])
+
+  createdAt        DateTime @default(now())
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+
+model Result {
+  id            String   @id @default(uuid())
+  tournamentId  String   @unique
+
+  firstPlace    String
+  secondPlace   String?
+  thirdPlace    String?
+
+  announcement  String?
+
+  tournament    Tournament @relation(fields: [tournamentId], references: [id])
+
+  createdAt     DateTime @default(now())
+}
+
+
+model RoomDetails {
+  id              String   @id @default(uuid())
+
+  tournamentId    String   @unique
+
+  roomId          String
+  roomPassword    String
+
+  visibleFrom     DateTime
+  visibleTill     DateTime
+
+  tournament      Tournament @relation(fields: [tournamentId], references: [id])
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
