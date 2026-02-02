@@ -86,3 +86,54 @@ export const myRegistrations = async (req, res) => {
 
   res.json(regs);
 };
+
+
+export const checkRegistration = async(req, res) => {
+  const { tournamentId } = req.params
+  const userId = req.user.id
+
+  const registration = await prisma.registration.findUnique({
+    where: {
+      userId_tournamentId: {
+        userId,
+        tournamentId
+      }
+    }
+  });
+
+  if(!registration){
+    return res.json({ registered: false })
+  }
+
+  res.json({
+    registered: true,
+    status: registration.status
+  })
+}
+
+
+export const getMyRegistrationForTournament = async (req, res) => {
+  const userId = req.user.id
+  const { tournamentId } = req.params
+  
+  const registration = await prisma.registration.findUnique({
+    where: {
+      userId_tournamentId: {
+        userId, 
+        tournamentId
+      }
+    },
+    include: {
+      tournament: true,
+      teamMembers: true
+    }
+  })
+
+  if(!registration)
+    return res.status(404).json({ message: "Not registered" })
+
+  if(registration.status !== "APPROVED")
+    return res.status(403).json({ message: "Not approved yet" })
+
+  res.json(registration)
+}

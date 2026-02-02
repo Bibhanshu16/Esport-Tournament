@@ -13,10 +13,11 @@ import Admin from "./pages/admin/admin.jsx";
 
 import AdminRoute from "./components/AdminRoute";
 import VerifyEmailInfo from "./components/VerifyEmailInfo.jsx";
-import TournamentRegister from "./components/TournamentRegister.jsx"
+import TournamentRegister from "./components/TournamentRegister.jsx";
 import Payment from "./components/Payment.jsx";
 
-import RegistrationPending from "./components/RegistrationPending.jsx"
+import RegistrationPending from "./components/RegistrationPending.jsx";
+import MyRegistrationDetails from "./components/MyRegistrationDetails.jsx"
 
 function App() {
   return (
@@ -31,10 +32,16 @@ function App() {
           <Route path="/tournaments" element={<Tournaments />} />
 
           <Route path="/payment" element={<Payment />} />
-          <Route path="/registration-pending" element={<RegistrationPending />} />
+          <Route
+            path="/registration-pending"
+            element={<RegistrationPending />}
+          />
 
           <Route path="/verify-email-info" element={<VerifyEmailInfo />} />
-          <Route path="/tournaments/:id/register" element={<TournamentRegister />} />
+          <Route
+            path="/tournaments/:id/register"
+            element={<TournamentRegister />}
+          />
 
           {/* Protected */}
           <Route
@@ -64,12 +71,17 @@ function App() {
           ></Route>
           <Route
             path="/tournaments/:id/register"
-            element={
-              <TournamentRegister />
-            }
-          >
+            element={<TournamentRegister />}
+          ></Route>
 
-          </Route>
+          <Route
+            path="/tournaments/:id/my-registration"
+            element={
+              <ProtectedRoute>
+                <MyRegistrationDetails />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/admin"

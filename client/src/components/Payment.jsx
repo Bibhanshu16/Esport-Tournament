@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { QrCode, CheckCircle, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import api from "../api/axios";
 
 export default function Payment() {
   const { state } = useLocation();
@@ -18,24 +19,25 @@ export default function Payment() {
   const { tournamentId, teamName, players, amount } = state;
 
   const handleConfirmPayment = async () => {
-    setConfirming(true);
+    try {
+      setConfirming(true);
 
-    console.log({
-      tournamentId,
-      teamName,
-      players,
-      amount
-    });
+      await api.post("/registrations/register", {
+        tournamentId,
+        teamName,
+        teamMembers: players,
+      });
 
-    setTimeout(() => {
       navigate("/registration-pending");
-    }, 1000);
+    } catch (err) {
+      alert(err.response?.data?.message || "Payment failed");
+      setConfirming(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
       <div className="max-w-md w-full bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-
         <h1 className="text-2xl font-bold text-indigo-400 text-center">
           Payment
         </h1>
