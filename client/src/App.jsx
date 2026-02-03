@@ -11,7 +11,7 @@ const Register = lazy(() => import("./pages/auth/Register.jsx"));
 const Login = lazy(() => import("./pages/auth/Login.jsx"));
 const Tournaments = lazy(() => import("./pages/users/Tournament.jsx"));
 const Profile = lazy(() => import("./pages/users/Profile.jsx"));
-const Admin = lazy(() => import("./pages/admin/admin.jsx"));
+const Admin = lazy(() => import("./pages/admin/Admin.jsx"));
 
 const VerifyEmailInfo = lazy(() => import("./components/VerifyEmailInfo.jsx"));
 const TournamentRegister = lazy(() => import("./components/TournamentRegister.jsx"));
