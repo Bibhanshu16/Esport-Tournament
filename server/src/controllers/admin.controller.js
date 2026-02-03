@@ -138,6 +138,40 @@ export const registrationsByStatus = async (req, res) => {
   res.json(regs);
 };
 
+export const registrationDetails = async (req, res) => {
+  const { id } = req.params;
+  const reg = await prisma.registration.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+          phone: true
+        }
+      },
+      tournament: {
+        select: {
+          id: true,
+          title: true,
+          game: true,
+          format: true,
+          entryFee: true,
+          prizePool: true,
+          startDateTime: true,
+          rules: true,
+          upiId: true
+        }
+      },
+      teamMembers: true,
+      payment: true
+    }
+  });
+
+  if (!reg) return res.status(404).json({ message: "Registration not found" });
+  res.json(reg);
+};
+
 export const broadcastTournamentEmail = async (req, res) => {
   const { tournamentId, subject, message, status } = req.body;
 
@@ -207,4 +241,42 @@ export const broadcastTournamentEmail = async (req, res) => {
   );
 
   res.json({ sent: emails.length });
+};
+
+export const deleteTournament = async (req, res) => {
+  const { id } = req.params;
+
+  const tournament = await prisma.tournament.findUnique({
+    where: { id },
+    select: { id: true }
+  });
+
+  if (!tournament) {
+    return res.status(404).json({ message: "Tournament not found" });
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const registrations = await tx.registration.findMany({
+      where: { tournamentId: id },
+      select: { id: true }
+    });
+
+    const registrationIds = registrations.map((r) => r.id);
+
+    if (registrationIds.length) {
+      await tx.teamMember.deleteMany({
+        where: { registrationId: { in: registrationIds } }
+      });
+      await tx.payment.deleteMany({
+        where: { registrationId: { in: registrationIds } }
+      });
+      await tx.registration.deleteMany({
+        where: { id: { in: registrationIds } }
+      });
+    }
+
+    await tx.tournament.delete({ where: { id } });
+  });
+
+  res.json({ message: "Tournament deleted" });
 };

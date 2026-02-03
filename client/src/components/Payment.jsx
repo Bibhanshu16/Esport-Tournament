@@ -9,19 +9,8 @@ export default function Payment() {
   const [confirming, setConfirming] = useState(false);
   const [transactionId, setTransactionId] = useState("");
 
-  if (!state) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white font-mono">
-        <div className="text-center space-y-4">
-          <AlertCircle className="mx-auto text-red-500" size={48} />
-          <p>Invalid payment session. Please restart registration.</p>
-          <button onClick={() => navigate("/")} className="text-indigo-400 underline">Return Home</button>
-        </div>
-      </div>
-    );
-  }
-
-  const { tournamentId, teamName, players, amount, upiId, tournamentTitle } = state;
+  const safeState = state || {};
+  const { tournamentId, teamName, players, amount, upiId, tournamentTitle } = safeState;
 
   const upiPayUrl = useMemo(() => {
     if (!upiId) return "";
@@ -43,6 +32,18 @@ export default function Payment() {
     });
     return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
   }, [upiPayUrl]);
+
+  if (!state) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white font-mono">
+        <div className="text-center space-y-4">
+          <AlertCircle className="mx-auto text-red-500" size={48} />
+          <p>Invalid payment session. Please restart registration.</p>
+          <button onClick={() => navigate("/")} className="text-indigo-400 underline">Return Home</button>
+        </div>
+      </div>
+    );
+  }
 
   const handleConfirmPayment = async (e) => {
     e.preventDefault();

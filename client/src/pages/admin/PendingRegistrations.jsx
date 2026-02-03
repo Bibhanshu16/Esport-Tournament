@@ -14,8 +14,8 @@ export default function PendingRegistrations() {
     try {
       const res = await api.get("/admin/pending-registrations");
       setRegistrations(res.data);
-    } catch (err) {
-      console.error("Failed to fetch pending registrations", err);
+    } catch {
+      console.error("Failed to fetch pending registrations");
     } finally {
       setLoading(false);
     }
@@ -30,7 +30,7 @@ export default function PendingRegistrations() {
 
       // remove approved one from UI
       setRegistrations((prev) => prev.filter((r) => r.id !== registrationId));
-    } catch (err) {
+    } catch {
       alert("Approval failed");
     }
   };

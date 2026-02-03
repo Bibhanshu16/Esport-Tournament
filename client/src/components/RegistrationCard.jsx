@@ -2,10 +2,25 @@ export default function RegistrationCard({
   reg,
   onApprove,
   onReject,
-  showActions = true
+  showActions = true,
+  onOpen
 }) {
   return (
-    <div className="border border-slate-800 rounded-lg p-6 bg-slate-900/60">
+    <div
+      className={`border border-slate-800 rounded-lg p-6 bg-slate-900/60 ${
+        onOpen ? "cursor-pointer hover:border-indigo-500/50 transition-colors" : ""
+      }`}
+      onClick={onOpen ? () => onOpen(reg.id) : undefined}
+      role={onOpen ? "button" : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      onKeyDown={
+        onOpen
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") onOpen(reg.id);
+            }
+          : undefined
+      }
+    >
       <div className="flex justify-between items-center">
         <div>
           <h3 className="text-xl font-bold text-purple-400">

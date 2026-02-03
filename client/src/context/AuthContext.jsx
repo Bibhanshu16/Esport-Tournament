@@ -1,7 +1,6 @@
-import { createContext, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import api from "../api/axios";
-
-export const AuthContext = createContext();
+import { AuthContext } from "./AuthContextValue.jsx";
 
 function parseJwt(token) {
   try {
@@ -12,31 +11,36 @@ function parseJwt(token) {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const initialToken = localStorage.getItem("token");
+  const initialDecoded = initialToken ? parseJwt(initialToken) : null;
+
+  const [user, setUser] = useState(() => {
+    if (!initialToken || !initialDecoded) {
+      if (initialToken && !initialDecoded) {
+        localStorage.removeItem("token");
+      }
+      return null;
+    }
+    return {
+      token: initialToken,
+      id: initialDecoded.id,
+      role: initialDecoded.role,
+      emailVerified: false
+    };
+  });
+  const [loading, setLoading] = useState(!!initialToken);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setLoading(false);
+    if (!initialToken || !initialDecoded) {
       return;
     }
 
-    const decoded = parseJwt(token);
-    if (!decoded) {
-      localStorage.removeItem("token");
-      setLoading(false);
-      return;
-    }
-
-    // 🔥 FETCH FULL USER FROM BACKEND
     api.get("/auth/me")
-      .then(res => {
+      .then((res) => {
         setUser({
-          token,
-          id: decoded.id,
-          role: decoded.role,
+          token: initialToken,
+          id: initialDecoded.id,
+          role: initialDecoded.role,
           emailVerified: res.data.emailVerified
         });
       })
@@ -45,12 +49,11 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [initialToken, initialDecoded]);
 
   const login = async (token) => {
     localStorage.setItem("token", token);
     const decoded = parseJwt(token);
-
     const res = await api.get("/auth/me");
 
     setUser({

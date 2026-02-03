@@ -10,13 +10,14 @@ export default function CreateTournament() {
     prizePool: "",
     maxSlots: 0,
     startDateTime: "",
-    upiId: ""
+    upiId: "",
+    rules: ""
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("admin/create-tournaments", form);
+      await api.post("/admin/create-tournaments", form);
       alert("Tournament created successfully!");
     } catch (err) {
       console.error(err);
@@ -109,6 +110,16 @@ export default function CreateTournament() {
             className={inputClass}
             placeholder="yourname@okicici" 
             onChange={e => setForm({...form, upiId: e.target.value})}
+          />
+        </div>
+
+        {/* Rules */}
+        <div className="md:col-span-2">
+          <label className={labelClass}>Tournament Rules</label>
+          <textarea
+            className={`${inputClass} min-h-[110px]`}
+            placeholder="Add rules, map, check-in time, and any special notes..."
+            onChange={e => setForm({...form, rules: e.target.value})}
           />
         </div>
       </div>

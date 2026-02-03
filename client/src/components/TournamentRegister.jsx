@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/axios";
 import { 
@@ -27,12 +27,7 @@ export default function TournamentRegister() {
   const [error, setError] = useState("");
   const [agreed, setAgreed] = useState(false);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    loadData();
-  }, [id]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const tRes = await api.get(`/tournaments/${id}`);
       setTournament(tRes.data);
@@ -58,12 +53,17 @@ export default function TournamentRegister() {
       setPlayers(Array.from({ length: count }, () => ({
         name: "", email: "", phone: "", inGameName: "",
       })));
-    } catch (err) {
+    } catch {
       setError("Tournament not found.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    loadData();
+  }, [loadData]);
 
   const handlePlayerChange = (index, field, value) => {
     const updatedPlayers = players.map((player, i) => 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios.js";
-import { AuthContext } from "../context/AuthContext.jsx";
+import { AuthContext } from "../context/AuthContextValue.jsx";
 import { Calendar, Users, Trophy, Gamepad2 } from "lucide-react";
 
 export default function TournamentCards({ items }) {
@@ -85,7 +85,7 @@ export default function TournamentCards({ items }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
           <h2 className="text-3xl font-bold text-white tracking-tight">
             Active Tournaments
@@ -94,7 +94,7 @@ export default function TournamentCards({ items }) {
             Join the fight and claim your glory.
           </p>
         </div>
-        <span className="bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full text-sm font-semibold border border-indigo-500/20">
+        <span className="bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full text-sm font-semibold border border-indigo-500/20 self-start sm:self-auto">
           {activeTournament.length} Live Now
         </span>
       </div>

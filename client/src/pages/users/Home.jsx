@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import TournamentCards from "../../components/TournamentCards";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContextValue.jsx";
 
 export default function Home() {
   const { user } = useContext(AuthContext);
@@ -56,7 +56,7 @@ export default function Home() {
               </Link>
             ) : (
               <Link
-                to="/tournaments"
+                to="/profile"
                 className="px-10 py-4 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 backdrop-blur-sm rounded-sm font-bold transition-all duration-300 uppercase tracking-widest text-sm"
               >
                 Go to Dashboard
@@ -78,6 +78,65 @@ export default function Home() {
           <TournamentCards />
         </div>
       </section>
+
+      {/* FOOTER */}
+      <footer className="bg-slate-950 border-t border-slate-800 px-6 py-12 md:px-20">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-slate-400">
+          <div>
+            <h3 className="text-white font-black uppercase tracking-widest text-sm mb-3">
+              EsportsPro
+            </h3>
+            <p className="text-sm leading-relaxed">
+              The ultimate arena for competitive squads. Train, compete, and
+              claim your prize.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-3">
+              Quick Links
+            </h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/tournaments" className="hover:text-white transition">
+                  Tournaments
+                </Link>
+              </li>
+              {!isLoggedIn ? (
+                <>
+                  <li>
+                    <Link to="/login" className="hover:text-white transition">
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/register" className="hover:text-white transition">
+                      Register
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link to="/profile" className="hover:text-white transition">
+                    Profile
+                  </Link>
+                </li>
+              )}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-3">
+              Contact
+            </h4>
+            <p className="text-sm">bibhanshus394@gmail.com</p>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center text-xs text-slate-600">
+          © {new Date().getFullYear()} Pago. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }

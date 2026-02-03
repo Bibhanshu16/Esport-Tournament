@@ -6,9 +6,7 @@ import {
   Calendar, 
   Trophy, 
   Shield, 
-  Hash, 
-  ChevronLeft,
-  Copy
+  ChevronLeft
 } from "lucide-react";
 import api from "../api/axios";
 
@@ -35,11 +33,6 @@ export default function MyRegistrationDetails() {
   if (error) return <CenteredStatus text={error} error />;
 
   const { tournament, teamMembers, spotNumber, teamName } = data;
-
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    // You could add a toast notification here
-  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 p-4 md:p-8 selection:bg-indigo-500/30">

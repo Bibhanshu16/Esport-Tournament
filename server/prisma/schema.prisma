@@ -119,6 +119,7 @@ model Payment {
   amount           Int
   paymentMethod    String   @default("UPI")
   status           PaymentStatus @default(PENDING)
+  transactionId    String?
 
   user             User           @relation(fields: [userId], references: [id])
   registration     Registration   @relation(fields: [registrationId], references: [id])

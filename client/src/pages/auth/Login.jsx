@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import api from "../../api/axios.js";
 import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext.jsx";
+import { AuthContext } from "../../context/AuthContextValue.jsx";
 
 import { useLocation } from "react-router-dom";
 
@@ -20,7 +20,6 @@ export default function Login() {
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname || "/";
 
-  console.log("LOGIN location.state:", location.state);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

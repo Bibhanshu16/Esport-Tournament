@@ -1,9 +1,9 @@
 import prisma from "../prisma.js";
 
-const RESERVE_MINUTES = 15;
+const RESERVE_MINUTES = 420;
 
 export const registerForTournament = async (req, res) => {
-  const { tournamentId, teamName, teamMembers } = req.body;
+  const { tournamentId, teamName, teamMembers, transactionId } = req.body;
   const userId = req.user.id;
 
   // 1. user must have verified email
@@ -52,6 +52,10 @@ export const registerForTournament = async (req, res) => {
     return res.status(400).json({ message: "Slots full" });
   }
 
+  if (!transactionId) {
+    return res.status(400).json({ message: "Transaction ID is required" });
+  }
+
   // 4. reserve slot
   const reservedUntil = new Date(
     Date.now() + RESERVE_MINUTES * 60 * 1000
@@ -65,6 +69,15 @@ export const registerForTournament = async (req, res) => {
       reservedUntil,
       teamMembers: {
         create: teamMembers
+      },
+      payment: {
+        create: {
+          userId,
+          amount: tournament.entryFee,
+          paymentMethod: "UPI",
+          status: "PENDING",
+          transactionId
+        }
       }
     }
   });

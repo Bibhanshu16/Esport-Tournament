@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../context/AuthContextValue.jsx";
 import { Menu, X, LayoutDashboard, User, LogOut, Trophy } from "lucide-react";
 
 export default function Navbar() {
@@ -17,31 +17,31 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav className="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 shadow-2xl">
+    <nav className="bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 sticky top-0 z-50 shadow-[0_10px_40px_rgba(0,0,0,0.35)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
           {/* Logo Section */}
           <Link to="/" className="flex-shrink-0 flex items-center group">
-            <div className="bg-indigo-600 p-2 rounded-lg mr-3 group-hover:rotate-12 transition-transform">
+            <div className="bg-gradient-to-br from-indigo-500 to-cyan-400 p-2.5 rounded-xl mr-3 shadow-lg shadow-indigo-500/30 group-hover:rotate-6 transition-transform">
               <Trophy className="text-white" size={20} />
             </div>
             <h2 className="text-xl font-black text-white tracking-tighter italic uppercase">
-              ESPORTS<span className="text-indigo-500">PRO</span>
+              ESPORTS<span className="text-cyan-400">PRO</span>
             </h2>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-10">
+          <div className="hidden md:flex items-center space-x-8">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/tournaments">Tournaments</NavLink>
 
             {user ? (
-              <div className="flex items-center gap-6 border-l border-slate-800 pl-10">
+              <div className="flex items-center gap-6 border-l border-slate-800/80 pl-8">
                 {user.role === "ADMIN" && (
                   <Link
                     to="/admin"
-                    className="flex items-center gap-2 text-amber-400 hover:text-amber-300 font-bold transition-all text-sm uppercase tracking-widest"
+                    className="flex items-center gap-2 text-amber-300 hover:text-amber-200 font-bold transition-all text-sm uppercase tracking-widest"
                   >
                     <LayoutDashboard size={18} />
                     Admin
@@ -52,7 +52,7 @@ export default function Navbar() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white px-5 py-2 rounded-lg text-sm font-bold transition-all border border-red-500/20 shadow-lg shadow-red-500/5"
+                  className="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-5 py-2 rounded-xl text-sm font-bold transition-all border border-red-500/30 shadow-lg shadow-red-500/10"
                 >
                   Logout
                 </button>
@@ -64,7 +64,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl text-sm font-black transition-all shadow-lg shadow-indigo-600/20 uppercase tracking-wider"
+                  className="bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white px-6 py-2.5 rounded-xl text-sm font-black transition-all shadow-lg shadow-indigo-600/30 uppercase tracking-wider"
                 >
                   Register
                 </Link>
@@ -76,7 +76,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="text-slate-300 hover:text-white p-2 rounded-lg bg-slate-800/50 border border-slate-700 focus:outline-none transition-all"
+              className="text-slate-300 hover:text-white p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/80 focus:outline-none transition-all"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -146,7 +146,10 @@ export default function Navbar() {
 // Internal Helpers
 function NavLink({ to, children }) {
   return (
-    <Link to={to} className="text-sm font-bold text-slate-400 hover:text-white uppercase tracking-widest transition-all">
+    <Link
+      to={to}
+      className="text-sm font-bold text-slate-400 hover:text-white uppercase tracking-widest transition-all relative after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-0 after:bg-gradient-to-r after:from-indigo-500 after:to-cyan-400 after:transition-all hover:after:w-full"
+    >
       {children}
     </Link>
   );
@@ -157,7 +160,7 @@ function MobileNavLink({ to, onClick, children }) {
     <Link
       to={to}
       onClick={onClick}
-      className="block px-4 py-3 rounded-xl text-lg font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition-all"
+      className="block px-4 py-3 rounded-xl text-lg font-bold text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all"
     >
       {children}
     </Link>

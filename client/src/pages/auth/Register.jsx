@@ -38,12 +38,12 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] -top-10 -right-10"></div>
       <div className="absolute w-80 h-80 bg-cyan-600/10 rounded-full blur-[120px] -bottom-10 -left-10"></div>
 
-      <div className="relative z-10 w-full max-w-md bg-slate-900/40 border border-slate-800 p-8 rounded-2xl backdrop-blur-md shadow-2xl">
+      <div className="relative z-10 w-full max-w-md bg-slate-900/40 border border-slate-800 p-8 rounded-2xl backdrop-blur-md shadow-2xl mx-auto">
         <div className="mb-8">
           <h2 className="text-3xl font-black uppercase tracking-tight text-white italic">
             Create <span className="text-cyan-400">Account</span>
