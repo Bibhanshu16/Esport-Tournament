@@ -21,7 +21,7 @@ const MyRegistrationDetails = lazy(() => import("./components/MyRegistrationDeta
 
 function App() {
   return (
-    <BrowserRouter>
+    
       <AuthProvider>
         <Navbar /> {/* 🔥 NAVBAR HERE */}
         <Suspense fallback={<AppLoading />}>
@@ -70,7 +70,7 @@ function App() {
           </Routes>
         </Suspense>
       </AuthProvider>
-    </BrowserRouter>
+    
   );
 }
 
