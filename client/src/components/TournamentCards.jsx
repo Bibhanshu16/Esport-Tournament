@@ -4,15 +4,21 @@ import api from "../api/axios.js";
 import { AuthContext } from "../context/AuthContext.jsx";
 import { Calendar, Users, Trophy, Gamepad2 } from "lucide-react";
 
-export default function TournamentCards() {
+export default function TournamentCards({ items }) {
   const [activeTournament, setActiveTournament] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!items);
   const [error, setError] = useState(null);
 
   const { user, loading: authLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (items) {
+      setActiveTournament(items);
+      setLoading(false);
+      return;
+    }
+
     const fetchTournaments = async () => {
       try {
         const response = await api.get("/tournaments/active");
@@ -26,7 +32,7 @@ export default function TournamentCards() {
     };
 
     fetchTournaments();
-  }, []);
+  }, [items]);
 
   const handleRegister = async (tournamentId) => {
     if (authLoading) return; // wait until auth is ready

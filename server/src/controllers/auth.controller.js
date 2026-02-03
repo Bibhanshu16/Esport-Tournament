@@ -160,6 +160,47 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+export const resendVerification = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id }
+    });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.emailVerified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    const token = randomUUID();
+    await prisma.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        token,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+      }
+    });
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: "Verify Email",
+        html: `
+          <h3>Verify your email</h3>
+          <p>Click the link below to verify your email:</p>
+          <a href="http://localhost:5000/api/auth/verify-email?token=${token}">Verify Email</a>
+        `
+      });
+    } catch (emailErr) {
+      console.error("Resend verification failed:", emailErr.message);
+      console.log(`VERIFY LINK: http://localhost:5000/api/auth/verify-email?token=${token}`);
+    }
+
+    res.json({ message: "Verification email sent" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to resend verification email" });
+  }
+};
+
 export const me = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -169,7 +210,8 @@ export const me = async (req, res) => {
         name: true,
         email: true,
         role: true,
-        emailVerified: true
+        emailVerified: true,
+        phone: true
       }
     });
 
@@ -177,5 +219,35 @@ export const me = async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const updateMe = async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+
+    if (!name && !phone) {
+      return res.status(400).json({ message: "Nothing to update" });
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        ...(name ? { name } : {}),
+        ...(phone ? { phone } : {})
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        emailVerified: true,
+        phone: true
+      }
+    });
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Update failed" });
   }
 };

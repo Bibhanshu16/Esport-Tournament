@@ -81,6 +81,8 @@ export default function TournamentRegister() {
         teamName: tournament.format === "SOLO" ? "SOLO" : teamName,
         players,
         amount: tournament.entryFee,
+        upiId: tournament.upiId,
+        tournamentTitle: tournament.title
       },
     });
   };

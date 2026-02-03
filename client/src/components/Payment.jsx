@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { QrCode, CheckCircle, ArrowLeft, ShieldCheck, Copy, Info } from "lucide-react";
-import { useState } from "react";
+import { QrCode, CheckCircle, ArrowLeft, ShieldCheck, Copy, Info, AlertCircle } from "lucide-react";
+import { useMemo, useState } from "react";
 import api from "../api/axios";
 
 export default function Payment() {
@@ -21,7 +21,28 @@ export default function Payment() {
     );
   }
 
-  const { tournamentId, teamName, players, amount, upiId } = state;
+  const { tournamentId, teamName, players, amount, upiId, tournamentTitle } = state;
+
+  const upiPayUrl = useMemo(() => {
+    if (!upiId) return "";
+    const params = new URLSearchParams({
+      pa: upiId,
+      pn: "Esports Platform",
+      am: String(amount || ""),
+      cu: "INR",
+      tn: tournamentTitle ? `${tournamentTitle} Entry` : "Tournament Entry"
+    });
+    return `upi://pay?${params.toString()}`;
+  }, [upiId, amount, tournamentTitle]);
+
+  const qrSrc = useMemo(() => {
+    if (!upiPayUrl) return "";
+    const params = new URLSearchParams({
+      size: "180x180",
+      data: upiPayUrl
+    });
+    return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
+  }, [upiPayUrl]);
 
   const handleConfirmPayment = async (e) => {
     e.preventDefault();
@@ -74,8 +95,17 @@ export default function Payment() {
           </div>
 
           <div className="bg-white p-3 rounded-xl flex justify-center mb-4">
-            {/* Generate a real QR here or keep the icon for placeholder */}
-            <QrCode size={180} className="text-slate-900" />
+            {qrSrc ? (
+              <img
+                src={qrSrc}
+                alt="UPI QR Code"
+                width={180}
+                height={180}
+                className="rounded"
+              />
+            ) : (
+              <QrCode size={180} className="text-slate-900" />
+            )}
           </div>
 
           <div className="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800">
@@ -87,6 +117,20 @@ export default function Payment() {
               <Copy size={18} className="text-slate-400" />
             </button>
           </div>
+
+          <a
+            href={upiPayUrl || undefined}
+            className={`mt-4 w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${
+              upiPayUrl
+                ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                : "bg-slate-800 text-slate-500 cursor-not-allowed"
+            }`}
+            onClick={(e) => {
+              if (!upiPayUrl) e.preventDefault();
+            }}
+          >
+            Open UPI App
+          </a>
         </div>
 
         <form onSubmit={handleConfirmPayment} className="space-y-4">
@@ -109,9 +153,9 @@ export default function Payment() {
 
           <button
             type="submit"
-            disabled={confirming}
+            disabled={confirming || transactionId.trim().length < 6}
             className={`w-full py-4 rounded-xl font-black flex justify-center items-center gap-2 transition-all transform active:scale-95
-              ${confirming 
+              ${(confirming || transactionId.trim().length < 6)
                 ? "bg-slate-800 text-slate-500 cursor-not-allowed" 
                 : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-xl shadow-indigo-500/20"}`}
           >
