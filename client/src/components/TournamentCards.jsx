@@ -28,7 +28,7 @@ export default function TournamentCards() {
     fetchTournaments();
   }, []);
 
-  const handleRegister = (tournamentId) => {
+  const handleRegister = async (tournamentId) => {
     if (authLoading) return; // wait until auth is ready
 
     // Not logged in
@@ -45,7 +45,21 @@ export default function TournamentCards() {
       return;
     }
 
-    // All good
+    try {
+      const checkRes = await api.get(`/registrations/check/${tournamentId}`);
+      if (checkRes.data?.registered) {
+        if (checkRes.data.status === "APPROVED") {
+          navigate(`/tournaments/${tournamentId}/my-registration`);
+        } else {
+          navigate(`/tournaments/${tournamentId}/register`);
+        }
+        return;
+      }
+    } catch (err) {
+      console.error("Registration check failed", err);
+    }
+
+    // Not registered
     navigate(`/tournaments/${tournamentId}/register`);
   };
 
