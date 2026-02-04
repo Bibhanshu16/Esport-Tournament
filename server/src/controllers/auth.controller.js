@@ -65,11 +65,11 @@ export const register = async (req, res) => {
         `,
       });
     } catch (emailErr) {
-      console.error("Email send failed:", emailErr.message);
-      // Log link for development if email service fails
+      console.error("Email send failed:", emailErr);
       if (process.env.NODE_ENV !== "production") {
         console.log(`VERIFY LINK: ${SERVER_URL}/api/auth/verify-email?token=${token}`);
       }
+      return res.status(500).json({ message: "Failed to send verification email" });
     }
 
     res.status(201).json({ message: "Registered successfully. Please verify your email." });
@@ -244,10 +244,11 @@ export const resendVerification = async (req, res) => {
         `
       });
     } catch (emailErr) {
-      console.error("Resend verification failed:", emailErr.message);
+      console.error("Resend verification failed:", emailErr);
       if (process.env.NODE_ENV !== "production") {
         console.log(`VERIFY LINK: ${SERVER_URL}/api/auth/verify-email?token=${token}`);
       }
+      return res.status(500).json({ message: "Failed to send verification email" });
     }
 
     res.json({ message: "Verification email sent" });
