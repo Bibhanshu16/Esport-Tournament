@@ -25,7 +25,8 @@ export default function Register() {
     try {
       const res = await api.post("/auth/register", form);
       setMessage(res.data.message || "Registration Successful!");
-      setTimeout(() => navigate("/login"), 2000);
+      localStorage.setItem("pendingEmailVerification", form.email);
+      setTimeout(() => navigate("/verify-email-info"), 1500);
     } catch (err) {
       if (err.response) {
         setMessage(err.response.data.message || "Server error");

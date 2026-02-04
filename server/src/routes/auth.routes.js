@@ -45,7 +45,7 @@ router.post("/forgot-password", forgotLimiter, forgotPassword);
 router.post("/reset-password", resetLimiter, resetPassword);
 router.get("/me", authMiddleware, me);
 router.put("/me", authMiddleware, updateMe);
-router.post("/resend-verification", authMiddleware, resendLimiter, resendVerification);
+router.post("/resend-verification", resendLimiter, resendVerification);
 
 
 export default router 

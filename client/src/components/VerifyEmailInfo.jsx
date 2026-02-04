@@ -5,13 +5,16 @@ export default function VerifyEmailInfo() {
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState("");
   const [error, setError] = useState("");
+  const [email, setEmail] = useState(
+    localStorage.getItem("pendingEmailVerification") || ""
+  );
 
   const handleResend = async () => {
     setLoading(true);
     setInfo("");
     setError("");
     try {
-      const res = await api.post("/auth/resend-verification");
+      const res = await api.post("/auth/resend-verification", { email });
       setInfo(res.data?.message || "Verification email sent.");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send email.");
@@ -32,9 +35,21 @@ export default function VerifyEmailInfo() {
         {error ? <p className="text-red-400 text-sm mb-4">{error}</p> : null}
         {info ? <p className="text-emerald-400 text-sm mb-4">{info}</p> : null}
 
+        <div className="mb-4 text-left">
+          <label className="text-[10px] uppercase font-bold text-slate-500 ml-1">Email</label>
+          <input
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/50 outline-none text-white px-4 py-3 rounded-lg transition-all"
+            required
+          />
+        </div>
+
         <button
           onClick={handleResend}
-          disabled={loading}
+          disabled={loading || !email}
           className={`w-full font-black py-3 rounded-xl transition-all tracking-widest text-xs uppercase ${
             loading
               ? "bg-slate-800 text-slate-500 cursor-not-allowed"

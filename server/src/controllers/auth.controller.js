@@ -212,9 +212,19 @@ export const resetPassword = async (req, res) => {
 
 export const resendVerification = async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id }
-    });
+    let user = null;
+    const emailFromBody = req.body?.email;
+    if (req.user?.id) {
+      user = await prisma.user.findUnique({
+        where: { id: req.user.id }
+      });
+    } else if (emailFromBody && isValidEmail(emailFromBody)) {
+      user = await prisma.user.findUnique({
+        where: { email: emailFromBody }
+      });
+    } else {
+      return res.status(400).json({ message: "Valid email is required" });
+    }
 
     if (!user) return res.status(404).json({ message: "User not found" });
     if (user.emailVerified) {
