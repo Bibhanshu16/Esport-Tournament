@@ -11,6 +11,9 @@ const getBaseUrl = (value) => {
 
 const SERVER_URL = getBaseUrl(process.env.SERVER_URL);
 const CLIENT_URL = getBaseUrl(process.env.CLIENT_URL);
+const API_BASE = SERVER_URL
+  ? (SERVER_URL.endsWith("/api") ? SERVER_URL : `${SERVER_URL}/api`)
+  : "";
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "");
 const isStrongEnoughPassword = (password) => (password || "").length >= 8;
@@ -61,13 +64,13 @@ export const register = async (req, res) => {
         html: `
           <h3>Welcome to Esports Platform</h3>
           <p>Click the link below to verify your email:</p>
-          <a href="${SERVER_URL}/api/auth/verify-email?token=${token}">Verify Email</a>
+          <a href="${API_BASE}/auth/verify-email?token=${token}">Verify Email</a>
         `,
       });
     } catch (emailErr) {
       console.error("Email send failed:", emailErr);
       if (process.env.NODE_ENV !== "production") {
-        console.log(`VERIFY LINK: ${SERVER_URL}/api/auth/verify-email?token=${token}`);
+        console.log(`VERIFY LINK: ${API_BASE}/auth/verify-email?token=${token}`);
       }
       return res.status(500).json({ message: "Failed to send verification email" });
     }
@@ -240,13 +243,13 @@ export const resendVerification = async (req, res) => {
         html: `
           <h3>Verify your email</h3>
           <p>Click the link below to verify your email:</p>
-          <a href="${SERVER_URL}/api/auth/verify-email?token=${token}">Verify Email</a>
+          <a href="${API_BASE}/auth/verify-email?token=${token}">Verify Email</a>
         `
       });
     } catch (emailErr) {
       console.error("Resend verification failed:", emailErr);
       if (process.env.NODE_ENV !== "production") {
-        console.log(`VERIFY LINK: ${SERVER_URL}/api/auth/verify-email?token=${token}`);
+        console.log(`VERIFY LINK: ${API_BASE}/auth/verify-email?token=${token}`);
       }
       return res.status(500).json({ message: "Failed to send verification email" });
     }
