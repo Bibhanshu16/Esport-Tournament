@@ -11,7 +11,6 @@ import {
   CheckCircle2, 
   AlertCircle 
 } from "lucide-react";
-import RulesText from "./RulesText.jsx";
 
 const inputClass =
   "w-full bg-slate-900/50 border border-slate-700/50 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all placeholder:text-slate-600 text-slate-200";
@@ -143,8 +142,8 @@ export default function TournamentRegister() {
                   ["Start Date", new Date(tournament.startDateTime).toLocaleDateString()],
               ]} />
               <Section icon={<Shield className="text-indigo-400" />} title="Rules & Intelligence">
-                <div className="bg-slate-900/40 p-6 rounded-2xl border border-slate-800 text-slate-400 leading-relaxed text-sm">
-                  <RulesText text={tournament.rules} />
+                <div className="bg-slate-900/40 p-6 rounded-2xl border border-slate-800 text-slate-400 leading-relaxed whitespace-pre-line text-sm">
+                  {tournament.rules || "No specific rules provided."}
                 </div>
               </Section>
             </div>
@@ -230,8 +229,8 @@ export default function TournamentRegister() {
               <Shield size={20} className="text-indigo-400" />
               <h3 className="font-bold text-sm uppercase tracking-widest">Tournament Terms & Fair Play</h3>
             </div>
-            <div className="p-6 max-h-40 overflow-y-auto text-slate-400 text-sm leading-relaxed custom-scrollbar bg-slate-950/20 font-light italic relative">
-              <RulesText text={tournament.rules || "Standard fair play rules apply. No cheating allowed."} />
+            <div className="p-6 max-h-40 overflow-y-auto text-slate-400 text-sm leading-relaxed custom-scrollbar bg-slate-950/20 font-light italic relative whitespace-pre-line">
+              {tournament.rules || "Standard fair play rules apply. No cheating allowed."}
             </div>
             <div className="p-4 bg-indigo-500/5 border-t border-slate-800 relative">
               <label className="flex items-center gap-3 cursor-pointer group/label">
