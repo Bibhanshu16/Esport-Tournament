@@ -9,6 +9,7 @@ import {
   ChevronLeft
 } from "lucide-react";
 import api from "../api/axios";
+import RulesText from "./RulesText.jsx";
 
 export default function MyRegistrationDetails() {
   const { id } = useParams();
@@ -94,8 +95,8 @@ export default function MyRegistrationDetails() {
                 <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-tight">
                   <Shield className="text-indigo-500" size={20} /> Tournament Rules
                 </h2>
-                <div className="text-slate-400 text-sm leading-relaxed whitespace-pre-line bg-slate-950/50 p-4 rounded-xl border border-slate-800/50">
-                  {tournament.rules}
+                <div className="text-slate-400 text-sm leading-relaxed bg-slate-950/50 p-4 rounded-xl border border-slate-800/50">
+                  <RulesText text={tournament.rules} />
                 </div>
               </div>
             )}
