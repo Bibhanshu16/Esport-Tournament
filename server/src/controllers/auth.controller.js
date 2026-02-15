@@ -87,11 +87,22 @@ export const register = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
+    const baseRedirect = CLIENT_URL || SERVER_URL || "";
+    const successRedirect = baseRedirect
+      ? `${baseRedirect.replace(/\/+$/, "")}/verify-email-success`
+      : "";
+    const failedRedirect = baseRedirect
+      ? `${baseRedirect.replace(/\/+$/, "")}/verify-email-info?status=invalid`
+      : "";
+
     const record = await prisma.emailVerificationToken.findUnique({
       where: { token: req.query.token },
     });
 
     if (!record || record.expiresAt < new Date()) {
+      if (failedRedirect) {
+        return res.redirect(failedRedirect);
+      }
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
@@ -102,8 +113,18 @@ export const verifyEmail = async (req, res) => {
 
     await prisma.emailVerificationToken.delete({ where: { id: record.id } });
 
+    if (successRedirect) {
+      return res.redirect(successRedirect);
+    }
     res.json({ message: "Email verified successfully" });
   } catch (err) {
+    const baseRedirect = CLIENT_URL || SERVER_URL || "";
+    const failedRedirect = baseRedirect
+      ? `${baseRedirect.replace(/\/+$/, "")}/verify-email-info?status=failed`
+      : "";
+    if (failedRedirect) {
+      return res.redirect(failedRedirect);
+    }
     res.status(500).json({ message: "Verification failed" });
   }
 };

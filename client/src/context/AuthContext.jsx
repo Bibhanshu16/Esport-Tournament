@@ -51,6 +51,35 @@ export const AuthProvider = ({ children }) => {
       .finally(() => setLoading(false));
   }, [initialToken, initialDecoded]);
 
+  const refreshUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setUser(null);
+      return null;
+    }
+    const decoded = parseJwt(token);
+    if (!decoded) {
+      localStorage.removeItem("token");
+      setUser(null);
+      return null;
+    }
+    try {
+      const res = await api.get("/auth/me");
+      const nextUser = {
+        token,
+        id: decoded.id,
+        role: decoded.role,
+        emailVerified: res.data.emailVerified
+      };
+      setUser(nextUser);
+      return nextUser;
+    } catch {
+      localStorage.removeItem("token");
+      setUser(null);
+      return null;
+    }
+  };
+
   const login = async (token) => {
     localStorage.setItem("token", token);
     const decoded = parseJwt(token);
@@ -70,7 +99,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

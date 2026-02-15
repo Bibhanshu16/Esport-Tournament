@@ -14,6 +14,7 @@ const Profile = lazy(() => import("./pages/users/Profile.jsx"));
 const Admin = lazy(() => import("./pages/admin/Admin.jsx"));
 
 const VerifyEmailInfo = lazy(() => import("./components/VerifyEmailInfo.jsx"));
+const VerifyEmailSuccess = lazy(() => import("./components/VerifyEmailSuccess.jsx"));
 const TournamentRegister = lazy(() => import("./components/TournamentRegister.jsx"));
 const Payment = lazy(() => import("./components/Payment.jsx"));
 const RegistrationPending = lazy(() => import("./components/RegistrationPending.jsx"));
@@ -37,6 +38,7 @@ function App() {
               element={<RegistrationPending />}
             />
             <Route path="/verify-email-info" element={<VerifyEmailInfo />} />
+            <Route path="/verify-email-success" element={<VerifyEmailSuccess />} />
             <Route
               path="/tournaments/:id/register"
               element={<TournamentRegister />}

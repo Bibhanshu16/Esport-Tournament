@@ -9,7 +9,7 @@ export default function TournamentCards({ items }) {
   const [loading, setLoading] = useState(!items);
   const [error, setError] = useState(null);
 
-  const { user, loading: authLoading } = useContext(AuthContext);
+  const { user, loading: authLoading, refreshUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,10 +45,18 @@ export default function TournamentCards({ items }) {
       return;
     }
 
-    // Email not verified
+    // Email not verified (refresh once in case it changed after verification)
     if (!user.emailVerified) {
-      navigate("/verify-email-info");
-      return;
+      try {
+        const refreshed = await refreshUser();
+        if (!refreshed?.emailVerified) {
+          navigate("/verify-email-info");
+          return;
+        }
+      } catch {
+        navigate("/verify-email-info");
+        return;
+      }
     }
 
     try {

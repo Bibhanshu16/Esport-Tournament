@@ -1,13 +1,46 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import { AuthContext } from "../context/AuthContextValue.jsx";
 
 export default function VerifyEmailInfo() {
   const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState("");
   const [error, setError] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [verified, setVerified] = useState(false);
   const [email, setEmail] = useState(
     localStorage.getItem("pendingEmailVerification") || ""
   );
+  const { refreshUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleRefreshStatus = async () => {
+    setChecking(true);
+    setError("");
+    try {
+      const refreshed = await refreshUser?.();
+      if (refreshed?.emailVerified) {
+        setVerified(true);
+        setInfo("Email verified. You can continue.");
+      } else {
+        setVerified(false);
+        setInfo("Not verified yet. Please check your inbox and verify.");
+      }
+    } catch {
+      setError("Unable to check verification status.");
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && refreshUser) {
+      handleRefreshStatus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleResend = async () => {
     setLoading(true);
@@ -57,6 +90,18 @@ export default function VerifyEmailInfo() {
           }`}
         >
           {loading ? "Sending..." : "Resend Verification Email"}
+        </button>
+
+        <button
+          onClick={verified ? () => navigate("/tournaments") : handleRefreshStatus}
+          disabled={checking}
+          className={`mt-3 w-full font-black py-3 rounded-xl transition-all tracking-widest text-xs uppercase ${
+            checking
+              ? "bg-slate-800 text-slate-500 cursor-not-allowed"
+              : "bg-slate-800 hover:bg-slate-700 text-white"
+          }`}
+        >
+          {checking ? "Checking..." : verified ? "Go to Tournaments" : "I've Verified, Refresh Status"}
         </button>
       </div>
     </div>
